@@ -1,0 +1,230 @@
+
+
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    
+
+    <!-- Main content -->
+    <section class="content">
+      <div class="row">
+	  <div class="col-sm-12">
+		<?php
+        if ($this->session->flashdata('success') != "") {
+            ?>
+            <div class="alert alert-success alert_box">
+                <a href="#" class="close alert_message" data-dismiss="alert" aria-label="close"><i
+                        class="fa fa-times"></i></a>
+                <strong>Success !</strong> <?php echo $this->session->flashdata('success'); ?>.
+            </div>
+        <?php
+        }
+        ?>
+        <?php if ($this->session->flashdata('error') != "") {
+
+            ?>
+            <div class="alert alert-danger alert_box">
+                <a href="#" class="close" data-dismiss="alert" aria-label="close"><i
+                        class="fa fa-times"></i></a>
+                <strong>Error!</strong>  <?php echo $this->session->flashdata('error'); ?>.
+            </div>
+        <?php
+        }
+        ?>
+	  </div>
+	  
+        <div class="col-xs-12">
+          
+          <!-- /.box -->
+
+          <div class="box">		  
+
+            <!-- /.box-header -->
+            <div class="box-body">
+                <div class="panel panel-info">
+                    <div class="panel-heading">
+                        <i class="fa fa-plus-square-o"></i><a href="<?php echo site_url('news/add_news');?>"> Add News</a>
+                    </div>
+                    <div class="panel-body">
+                        <div class="table-responsive">
+              <table id="example1" class="table table-bordered table-striped">
+                <thead>
+                <tr>
+                   <th>S.N</th>
+
+                   <th>Title </th>
+                   <th>Puhlished </th>
+                   <th>Action </th>
+                </tr>
+                </thead>
+                <tbody>
+                <?php
+                        $i = 1;
+                        foreach($records as $row)
+                        {
+                            $c_id=$row['content_id'];
+                            ?>
+
+                            <tr>
+                                <td><?php echo $i++;?></td>
+
+                                <td>
+                                    <a href="<?php echo base_url();?>../news/<?php echo $row['content_id']; ?>" target="_blank"><?php echo $row['title'];?></a>
+                                    <br>
+
+                              
+
+                                    <?php 
+                                   //echo $c_id;
+                                    $q  = "SELECT category_id from news_category where news_id= '$c_id'";
+                                    $query = $this->db->query($q);
+                                    $c_category = $query->result_array();
+                                 //   echo $this->db->last_query(); exit();
+                                  //  print_r($c_category); exit();
+                                    ?>
+                                    Categories :
+                                    <?php  foreach ($c_category as $postCat){ 
+                                        ?>
+                                          <!--<a href=""></i><?=$this->news_model->category_name_by_id($postCat['category_id'])?></i></a> |-->
+                                        <div class="btn-group">
+                                             <a class="btn btn-success btn-xs" href=""><?=$this->news_model->category_name_by_id($postCat['category_id'])?></a>
+                                             </div>
+                                        
+
+                                        
+                                        <?php
+                                     
+                                     } ?>
+                                      <?php if ($row['reporter_id'] > 0){ ?>
+                                     </br>
+                                     Reporter :
+                                     <div class="btn-group">
+                                             <a class="btn btn-warning btn-xs" href=""><?=$this->news_model->reporter_name_by_id($row['reporter_id'])?></a>
+                                             </div>
+                                             <?php } ?>
+                                    </br>
+                                    <?php if ($row['guest_id'] > 0){ ?>
+                                    Guest :
+                                     <div class="btn-group">
+                                             <a class="btn btn-warning btn-xs" href=""><?=$this->news_model->guest_name_by_id($row['guest_id'])?></a>
+                                             </div>
+                                    <?php } ?>
+                        
+                    
+
+
+
+
+
+                            </td>
+                                <td>
+                                   <!--  <?php
+                                    echo(isset($row['publish_status']) and $row['publish_status'] == "1") ? "Yes" : "No";
+                                    ?> -->   
+                                       <?php if($row['publish_status']==1) echo "Publish";?> 
+                                        <?php if($row['publish_status']==0) echo "UnPublish";?> 
+                                         <?php if($row['publish_status']==2) echo "Draft";?> 
+                                    </td>
+
+                                <td>
+
+                                    <div class="btn-group">
+                                        <a class="btn btn-success btn-xs" href="<?php echo site_url('news/edit_news/'. $row['content_id']);?>"  title="Edit"><i class="fa fa-pencil-square-o"></i></a>
+
+                                        <a class="btn btn-danger btn-xs" data-target="#myModal_delete<?php echo $row['content_id'];?>" data-toggle="modal" title="Delete"><i class="fa fa-trash-o"></i></a>
+                                    </div>
+                                    <!-- Modal for news -->
+                                    <div id="myModal_news<?php echo $row['content_id'];?>" class="modal fade" role="dialog">
+                                        <div class="modal-dialog">
+
+                                            <!-- Modal content-->
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                                    <h4 class="modal-title">NewsLetter Confirmation</h4>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <p>Are you sure to send this Information</p>
+                                                </div>
+
+                                                <div class="modal-footer">
+                                                    <input type="hidden" class="hidden_link_news" value="<?php echo site_url('news/send/'. $row['content_id']); ?>">
+                                                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                                                    <button type="button" class="btn btn-default news_send">Ok</button>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                    <!--modal-->
+                                    <!-- Modal for  delete -->
+                                    <div id="myModal_delete<?php echo $row['content_id'];?>" class="modal fade" role="dialog">
+                                        <div class="modal-dialog">
+
+                                            <!-- Modal content-->
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                                    <h4 class="modal-title">Content Delete Confirmation</h4>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <p>Are you sure to delete this Information</p>
+                                                </div>
+
+                                                <div class="modal-footer">
+                                                    <input type="hidden" class="hidden_link_delete" value="<?php echo site_url('news/delete_news/'. $row['content_id']); ?>">
+                                                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                                                    <button type="button" class="btn btn-default delete">Ok</button>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                    <!--modal-->
+                                </td>
+                            </tr>
+                        <?php
+                        }
+                        ?>
+               
+                
+                </tbody>
+                
+              </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /.box-body -->
+          </div>
+          <!-- /.box -->
+        </div>
+        <!-- /.col -->
+      </div>
+      <!-- /.row -->
+    </section>
+    <!-- /.content -->
+  </div>
+  <!-- /.content-wrapper -->
+  
+
+<!-- /. ROW  -->
+<script>
+    $.validate();
+</script>
+<script>
+    $('.delete').click(function(){
+
+        var values = $(this).parent() .find('.hidden_link_delete').val();
+        window.location =  values;
+    });
+
+</script>
+
+<script>
+    $('.news_send').click(function(){
+
+        var values = $(this).parent() .find('.hidden_link_news').val();
+        window.location =  values;
+    });
+
+</script>
